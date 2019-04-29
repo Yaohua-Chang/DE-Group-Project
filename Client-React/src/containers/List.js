@@ -7,7 +7,7 @@ import { observer } from "mobx-react";
 
 
 // Stores are where the business logic resides
-class UserStore {
+export default class UserStore {
   BASE_URL = "https://94f0b0d0.ngrok.io"
 
   @observable users = [];
@@ -360,4 +360,4 @@ const UserApp = observer(() => {
 })
 
 
-render(<UserApp />, document.getElementById("app"));
+
