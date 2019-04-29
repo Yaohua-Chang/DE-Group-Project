@@ -1,8 +1,20 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import "./Login.css";
+import ApolloClient from 'apollo-boost';
+import { Mutation } from 'react-apollo'
+import gql from 'graphql-tag'
+
+const LOGIN_MUTATION = gql`
+    mutation { 
+      loginUser(email:"admin@example.com", password: "password") {
+        token
+      }
+  }
+`;
 
 export default class Login extends Component {
+
   constructor(props) {
     super(props);
 
@@ -22,18 +34,13 @@ export default class Login extends Component {
     });
   }
 
-  handleSubmit = async event => {
+  handleSubmit = event => {
     event.preventDefault();
-
-    try {
-        // await Auth.signIn(this.state.email, this.state.password);
-        alert("Logged in");
-      } catch (e) {
-        alert(e.message);
-      }
+    window.location.href = "/list"
   }
 
   render() {
+
     return (
       <div className="Login">
         <form onSubmit={this.handleSubmit}>

@@ -4,10 +4,18 @@ import './index.css';
 import App from './App';
 import { BrowserRouter as Router } from "react-router-dom";
 import * as serviceWorker from './serviceWorker';
+import { ApolloProvider } from "react-apollo";
+import ApolloClient from "apollo-boost";
+
+const client = new ApolloClient({
+    uri: "http://localhost:4000"
+  });
 
 ReactDOM.render(
     <Router>
-        <App />
+        <ApolloProvider client={client}>
+            <App />
+        </ApolloProvider>        
     </Router>, 
     document.getElementById('root'));
 
