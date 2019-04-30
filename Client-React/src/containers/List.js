@@ -7,10 +7,17 @@ import { observer } from "mobx-react";
 
 
 // Stores are where the business logic resides
-export default class UserStore {
+class UserStore {
   BASE_URL = "https://94f0b0d0.ngrok.io"
 
-  @observable users = [];
+  @observable users = [
+    {'id': 0, 'first': 'Joe', 'last': 'Bloggs',
+        'email': 'joe@bloggs.com', 'role': 'student', 'active': true},
+    {'id': 1, 'first': 'Ben', 'last': 'Bitdiddle',
+        'email': 'ben@cuny.edu', 'role': 'student', 'active': true},
+    {'id': 2, 'first': 'Alissa P', 'last': 'Hacker',
+        'email': 'missalissa@cuny.edu', 'role': 'professor', 'active': true},
+];
   @observable filterType = "All";
   @observable editingUser = { id: null, first: "", last: "", email: "", role: ""};
   @observable fetchState = "idle"
@@ -361,3 +368,4 @@ const UserApp = observer(() => {
 
 
 
+export default UserApp
