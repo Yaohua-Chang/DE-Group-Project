@@ -1,3 +1,19 @@
 h1, p {
     font-family: Lato;
   }
+
+button {
+  padding: 5px;
+}
+
+.List {
+  padding: 0px 30px;
+}
+
+.List form {
+  margin: 0 auto;
+}
+.List th, td {
+  padding: 12px;
+  text-align: left;
+}

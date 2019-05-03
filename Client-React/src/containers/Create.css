@@ -1,0 +1,13 @@
+.Create {
+    padding: 60px 0;
+  }
+
+.Create form {
+margin: 0 auto;
+max-width: 320px;
+}
+
+.Create input, select{
+    margin: 8px;
+}
+

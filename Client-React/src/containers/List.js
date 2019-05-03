@@ -1,6 +1,5 @@
 import "./List.css";
 import React, { Component, useState } from "react";
-import { render } from "react-dom";
 
 import { observable, action, computed } from "mobx";
 import { observer } from "mobx-react";
@@ -46,14 +45,19 @@ class UserStore {
     this.filterType = filterType;
   }
 
+  createUser() {
+    window.location.href = "/createUser"
+  }
+
   @action
   setEditingUser(id) {
-    let user = this.users.find(e => e.id === id);
-    this.editingUser.id = id
-    this.editingUser.first = user.first
-    this.editingUser.last = user.last
-    this.editingUser.email = user.email
-    this.editingUser.role = user.role
+    window.location.href = "/editUser/"+id;
+    // let user = this.users.find(e => e.id === id);
+    // this.editingUser.id = id
+    // this.editingUser.first = user.first
+    // this.editingUser.last = user.last
+    // this.editingUser.email = user.email
+    // this.editingUser.role = user.role
   }
 
   @action
@@ -132,6 +136,12 @@ class UserStore {
                   this.fetchState = "error"
                   console.log(error)
                   })
+    }
+    @action
+    onCreateUser = () => {
+      // event.preventDefault();
+      alert("Test")
+      window.location.href = "/createUser"
     }
 
 }
@@ -285,6 +295,12 @@ const FetchState = observer(({ userStore }) => (
   </div>
 ));
 
+const UserCreate = observer(({ userStore }) => (
+  <div>
+     <button type="button" onClick={userStore.createUser}>Create New User</button>
+  </div>
+));
+
 const UserCounter = observer(({ userStore }) => (
   <span>
     {userStore.filterCompleted.length} of {userStore.users.length} Actived
@@ -292,7 +308,9 @@ const UserCounter = observer(({ userStore }) => (
 ));
 
 const UserList = observer(({ userStore }) => (
+  <div className="List">
   <table>
+    {/* <button type="button" onclick={userStore.onCreateUser}>Create New User</button> */}
     <thead>
       <tr>
         <th>First Name</th>
@@ -321,31 +339,9 @@ const UserList = observer(({ userStore }) => (
       ))}
     </tbody>
   </table>
+  </div>
 ));
 
-@observer
-class JSONView extends Component {
-  @observable showJSON = false;
-
-  toggleShowJSON = () => {
-    this.showJSON = !this.showJSON;
-  };
-
-  render() {
-    return (
-      <div>
-        <input
-          type="checkbox"
-          name="showjson"
-          value={this.showJSON}
-          onChange={this.toggleShowJSON}
-        />
-        Show JSON
-        {this.showJSON && <p>{JSON.stringify(this.props.store)}</p>}
-      </div>
-    );
-  }
-}
 
 const UserApp = observer(() => {
 
@@ -354,7 +350,7 @@ const UserApp = observer(() => {
 
   return (
     <div>
-      <UserForm userStore={userStore} />
+      <UserCreate userStore={userStore} />
       <hr />
       <UserList userStore={userStore} />
       <hr />
@@ -362,7 +358,6 @@ const UserApp = observer(() => {
       <UserCounter userStore={userStore} />
       <hr />
       <UserFilter userStore={userStore} />
-      <JSONView store={userStore} />
     </div>)
 })
 
