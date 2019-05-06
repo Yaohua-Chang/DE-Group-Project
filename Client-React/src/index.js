@@ -8,7 +8,11 @@ import { ApolloProvider } from "react-apollo";
 import ApolloClient from "apollo-boost";
 
 const client = new ApolloClient({
-    uri: "http://localhost:4000"
+    uri: "https://evening-cliffs-67832.herokuapp.com",
+    onError: ({ networkError, graphQLErrors }) => {
+        console.log('graphQLErrors', graphQLErrors)
+        console.log('networkError', networkError)
+      }
   });
 
 ReactDOM.render(

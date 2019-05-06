@@ -8,7 +8,7 @@ import CreateUser from "./containers/CreateUser"
 
 export default () =>
   <Switch>
-    <Route path="/" exact component={Home} />
+    <Route path="/" exact component={Login} />
     <Route path="/login" exact component={Login} />
     <Route path="/list" exact component={List} />
     <Route path="/createUser" exact component={CreateUser} />

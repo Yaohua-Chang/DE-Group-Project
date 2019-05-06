@@ -1,26 +1,33 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import "./Login.css";
-import ApolloClient from 'apollo-boost';
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
+import {AUTH_TOKEN, CURR_USER} from '../constants'
 
 const LOGIN_MUTATION = gql`
-    mutation { 
-      loginUser(email:"admin@example.com", password: "password") {
+    mutation loginUserMutation($email: String!, $password: String!){ 
+      loginUser(email:$email, password: $password) {
         token
-      }
+        user {
+          id
+          name
+          email,
+          role
+        }
+      } 
   }
 `;
 
-export default class Login extends Component {
+class Login extends Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      message:""
     };
   }
 
@@ -34,16 +41,37 @@ export default class Login extends Component {
     });
   }
 
-  handleSubmit = event => {
-    event.preventDefault();
-    window.location.href = "/list"
+  _confirm = async data => {
+    this._saveUserData(data.loginUser.token, data.loginUser.user);
+    window.location.href = "/list";
   }
 
-  render() {
+  _saveUserData = (token, user) => {
+    localStorage.setItem(AUTH_TOKEN, token);
+    localStorage.setItem(CURR_USER, user);
+  }
 
+
+  render() {
     return (
+
+    <Mutation mutation={LOGIN_MUTATION} onCompleted={data => this._confirm(data)}>
+    {(loginUserMutation, { data, loading, error }) => {
+    if (loading) {
+          this.state.message = "Loading..."
+    }
+    if (error) {
+      this.state.message = "Username or password is not right, please input again!"
+    }
+      return (
       <div className="Login">
-        <form onSubmit={this.handleSubmit}>
+
+        <form onSubmit={e => {
+                e.preventDefault();
+                loginUserMutation({ variables: {
+                  email: this.state.email,
+                  password: this.state.password
+                }})}}>
           <FormGroup controlId="email" bsSize="large">
             <ControlLabel>Email</ControlLabel>
             <FormControl
@@ -64,13 +92,20 @@ export default class Login extends Component {
           <Button
             block
             bsSize="large"
-            disabled={!this.validateForm()}
+            disabled={!this.validateForm()} 
             type="submit"
           >
             Login
           </Button>
+          <label className="Message">{this.state.message}</label>
         </form>
+        
       </div>
-    );
-  }
+      )
+  }}
+  </Mutation>
+      )
 }
+}
+
+export default Login;

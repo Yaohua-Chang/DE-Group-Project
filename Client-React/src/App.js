@@ -2,9 +2,12 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import { Nav, Navbar, NavItem } from "react-bootstrap";
 import './App.css';
+import {AUTH_TOKEN} from './constants'
 import Routes from "./Routes";
 
 function App() {
+  const authToken = localStorage.getItem(AUTH_TOKEN)
+
   return (
       <div className="App container">
           <Navbar fluid collapseOnSelect>
@@ -16,7 +19,16 @@ function App() {
             </Navbar.Header>
           <Navbar.Collapse>
             <Nav pullRight>
+            {authToken ? (
+              <NavItem onClick={() => {
+                localStorage.removeItem(AUTH_TOKEN)
+                window.location.href = "/"
+              }}>
+              Logout
+              </NavItem>
+            ) : (
               <NavItem href="/login">Login</NavItem>
+            )}
             </Nav>
           </Navbar.Collapse>
           </Navbar>

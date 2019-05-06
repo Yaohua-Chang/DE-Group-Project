@@ -7,4 +7,11 @@
       margin: 0 auto;
       max-width: 320px;
     }
+
+    
+  }
+
+  .Message {
+    margin-top: 20px;
+    color: rgb(189, 30, 30);
   }
