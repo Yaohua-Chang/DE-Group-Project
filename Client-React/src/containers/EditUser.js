@@ -28,9 +28,19 @@ class UserForm extends Component {
       name: '',
       email: '',
       role: 'Student',
-      password: '',
       message: ""
     };
+  }
+
+  componentDidMount() {
+    let user = this.props.location.state;
+    let {name, email, role} = user;
+
+    this.setState({
+      name : name,
+      email: email,
+      role: role,
+    })
   }
 
   create = () => {
@@ -38,7 +48,7 @@ class UserForm extends Component {
   };
 
   validateForm() {
-    return this.state.name.length > 0 && this.state.email.length > 0 && this.state.password.length > 0;
+    return this.state.name.length > 0 && this.state.email.length > 0;
   }
 
   render() {
@@ -60,14 +70,15 @@ class UserForm extends Component {
             <div className="Create">
               <form onSubmit={e => {
                 e.preventDefault();
-                addUser({
-                  variables: {
-                    name: this.state.name,
-                    email: this.state.email,
-                    password: this.state.password,
-                    role: this.state.role
-                  }
-                })
+                window.location.href = "/list"
+                // addUser({
+                //   variables: {
+                //     name: this.state.name,
+                //     email: this.state.email,
+                //     password: this.state.password,
+                //     role: this.state.role
+                //   }
+                // })
               }}>
 
                 <FormGroup controlId="name" bsSize="large">
@@ -89,20 +100,12 @@ class UserForm extends Component {
                   />
                 </FormGroup>
 
-                <FormGroup controlId="password" bsSize="large">
-                  <ControlLabel>Password</ControlLabel>
-                  <FormControl
-                    value={this.state.password}
-                    onChange={e => this.setState({ password: e.target.value })}
-                    type="password"
-                  />
-                </FormGroup>
-
                 <FormGroup controlId="role" bsSize="large">
                   <ControlLabel>Role</ControlLabel>
-                  <select className="form-control" onChange={e => this.setState({ role: e.target.value })}>
+                  <select className="form-control" value={this.state.role} onChange={e => this.setState({ role: e.target.value })}>
                     <option value="Student" >Student</option>
                     <option value="Faculty">Faculty</option>
+                    <option value="Admin">Admin</option>
                   </select>
                 </FormGroup>
 
@@ -112,7 +115,7 @@ class UserForm extends Component {
                   disabled={!this.validateForm()}
                   type="submit"
                 >
-                  Submit
+                  Update
               </Button>
                 <label className="Message">{this.state.message}</label>
               </form>

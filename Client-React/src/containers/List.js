@@ -27,26 +27,36 @@ class UserList extends Component {
     window.location.href = "/createUser";
   };
 
-  onEditClick = (id) => {
-    window.location.href = "/editUser/" + id;
+  onEditClick = (user) => {
+
+    let path = {
+      pathname: '/editUser',
+      state: user,
+    }
+    this.props.history.push(path);
+
   };
 
   render() {
     return (
-      <div>
-        <button type="button" onClick={this.onCreateClick}>Create New User</button>
-        <hr />
 
-        <Query query={GET_USERS}>
-          {({ loading, error, data }) => {
-            if (loading) return <div>Fetching</div>
-            if (error) return <div>Error</div>
+      <Query query={GET_USERS}>
+        {({ loading, error, data }) => {
+          if (loading) return <div>Fetching</div>
+          if (error) {
+            let path = {
+              pathname: '/login',
+              state: "Please login to accesss university management system.",
+            }
+            this.props.history.push(path);
 
-            const users = data.users
+            return null;
+          }
 
-            // this.setState({users:data.users})
-
-            return (
+          return (
+            <div>
+              <button type="button" onClick={this.onCreateClick}>Create New User</button>
+              <hr />
               <table className="table table-striped">
                 <thead className="thead-light">
                   <tr>
@@ -57,18 +67,19 @@ class UserList extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map(user => <UserView key={user.id} user={user} />)}
+                  {data.users.map(user => <UserView key={user.id} user={user} editClick={this.onEditClick} />)}
                 </tbody>
               </table>
-            )
-          }}
-        </Query>
-      </div>
+            </div>
+          )
+        }}
+      </Query>
+
     )
   }
 };
 
-const UserView = ({ user }) => (
+const UserView = ({ user, editClick }) => (
   <tr>
     <th scope="row">
       {user.id}
@@ -83,35 +94,9 @@ const UserView = ({ user }) => (
       {user.role}
     </td>
     <td>
-      <a href="#" >Edit</a>
+      <a href="#" onClick={editClick.bind(this, user)}>Edit</a>
     </td>
   </tr>
 );
-
-
-// const UserCounter = () => (
-//   <span>
-//     {userStore.filterCompleted.length} of {userStore.users.length} Actived
-//   </span>
-// );
-
-// class UserApp extends Component {
-
-//   onCreateClick = (event) => {
-//     window.location.href = "/createUser";
-//   }
-
-//   render() {
-//     return (
-//       <div>
-//         <button type="button" onClick={this.onCreateClick}>Create New User</button>
-//         <hr />
-//         <UserList />
-//       </div>)
-//   }
-
-// }
-
-
 
 export default UserList

@@ -3,7 +3,7 @@ import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import "./Login.css";
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
-import {AUTH_TOKEN, CURR_USER} from '../constants'
+import { AUTH_TOKEN, CURR_USER } from '../constants'
 
 const LOGIN_MUTATION = gql`
     mutation loginUserMutation($email: String!, $password: String!){ 
@@ -27,8 +27,17 @@ class Login extends Component {
     this.state = {
       email: "",
       password: "",
-      message:""
+      message: ""
     };
+  }
+
+
+  componentDidMount() {
+    let message = this.props.location.state;
+
+    this.setState({
+      message: message
+    })
   }
 
   validateForm() {
@@ -56,58 +65,61 @@ class Login extends Component {
   render() {
     return (
 
-    <Mutation mutation={LOGIN_MUTATION} onCompleted={data => this._confirm(data)}>
-    {(loginUserMutation, { data, loading, error }) => {
-    if (loading) {
-          this.state.message = "Loading..."
-    }
-    if (error) {
-      // this.state.message = "Username or password is not right, please input again!"
-      this.state.message = error + ""
-    }
-      return (
-      <div className="Login">
+      <Mutation mutation={LOGIN_MUTATION} onCompleted={data => this._confirm(data)}>
+        {(loginUserMutation, { data, loading, error }) => {
+          if (loading) {
+            this.state.message = "Loading..."
+          }
+          if (error) {
+            // this.state.message = "Username or password is not right, please input again!"
+            this.state.message = error + ""
+          }
+          return (
+            <div className="Login">
 
-        <form onSubmit={e => {
+              <form onSubmit={e => {
                 e.preventDefault();
-                loginUserMutation({ variables: {
-                  email: this.state.email,
-                  password: this.state.password
-                }})}}>
-          <FormGroup controlId="email" bsSize="large">
-            <ControlLabel>Email</ControlLabel>
-            <FormControl
-              autoFocus
-              type="email"
-              value={this.state.email}
-              onChange={this.handleChange}
-            />
-          </FormGroup>
-          <FormGroup controlId="password" bsSize="large">
-            <ControlLabel>Password</ControlLabel>
-            <FormControl
-              value={this.state.password}
-              onChange={this.handleChange}
-              type="password"
-            />
-          </FormGroup>
-          <Button
-            block
-            bsSize="large"
-            disabled={!this.validateForm()} 
-            type="submit"
-          >
-            Login
+                loginUserMutation({
+                  variables: {
+                    email: this.state.email,
+                    password: this.state.password
+                  }
+                })
+              }}>
+                <FormGroup controlId="email" bsSize="large">
+                  <ControlLabel>Email</ControlLabel>
+                  <FormControl
+                    autoFocus
+                    type="email"
+                    value={this.state.email}
+                    onChange={this.handleChange}
+                  />
+                </FormGroup>
+                <FormGroup controlId="password" bsSize="large">
+                  <ControlLabel>Password</ControlLabel>
+                  <FormControl
+                    value={this.state.password}
+                    onChange={this.handleChange}
+                    type="password"
+                  />
+                </FormGroup>
+                <Button
+                  block
+                  bsSize="large"
+                  disabled={!this.validateForm()}
+                  type="submit"
+                >
+                  Login
           </Button>
-          <label className="Message">{this.state.message}</label>
-        </form>
-        
-      </div>
-      )
-  }}
-  </Mutation>
-      )
-}
+                <label className="Message">{this.state.message}</label>
+              </form>
+
+            </div>
+          )
+        }}
+      </Mutation>
+    )
+  }
 }
 
 export default Login;
