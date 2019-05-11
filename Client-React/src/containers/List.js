@@ -1,366 +1,117 @@
 import "./List.css";
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 
-import { observable, action, computed } from "mobx";
-import { observer } from "mobx-react";
+import gql from "graphql-tag";
+import { Query } from "react-apollo";
 
-
-// Stores are where the business logic resides
-class UserStore {
-  BASE_URL = "https://94f0b0d0.ngrok.io"
-
-  @observable users = [
-    {'id': 0, 'first': 'Joe', 'last': 'Bloggs',
-        'email': 'joe@bloggs.com', 'role': 'student', 'active': true},
-    {'id': 1, 'first': 'Ben', 'last': 'Bitdiddle',
-        'email': 'ben@cuny.edu', 'role': 'student', 'active': true},
-    {'id': 2, 'first': 'Alissa P', 'last': 'Hacker',
-        'email': 'missalissa@cuny.edu', 'role': 'professor', 'active': true},
-];
-  @observable filterType = "All";
-  @observable editingUser = { id: null, first: "", last: "", email: "", role: ""};
-  @observable fetchState = "idle"
-
-
-  // compute a filtered list of users
-  @computed
-  get filtered() {
-    if (this.filterType === "All") {
-      return this.users;
-    } else if (this.filterType === "Active") {
-      return this.users.filter(t => t.actived);
-    } else {
-      return this.users.filter(t => !t.actived);
-    }
+const GET_USERS = gql`
+  {
+      users {
+        id
+        name
+        email
+        role
+      }
   }
+`;
 
-  @computed
-  get filterCompleted() {
-    return this.users.filter(t => t.actived);
-  }
-
-  // set a filter type: "All", "Active" or "Inactive"
-  @action
-  setFilterType(filterType) {
-    this.filterType = filterType;
-  }
-
-  createUser() {
-    window.location.href = "/createUser"
-  }
-
-  @action
-  setEditingUser(id) {
-    window.location.href = "/editUser/"+id;
-    // let user = this.users.find(e => e.id === id);
-    // this.editingUser.id = id
-    // this.editingUser.first = user.first
-    // this.editingUser.last = user.last
-    // this.editingUser.email = user.email
-    // this.editingUser.role = user.role
-  }
-
-  @action
-  clearForm = () => {
-    this.editingUser.id = null
-    this.editingUser.first = "";
-    this.editingUser.last = "";
-    this.editingUser.email = "";
-    this.editingUser.role = "";
-  }
-
-  // create a user and post it to server
-  @action
-  create = () => {
-    let newUser = {first: this.editingUser.first, last: this.editingUser.last, email:this.editingUser.email, role: this.editingUser.role, actived: false }
-    fetch(this.BASE_URL + "/users", {
-      method: 'post',
-      body: JSON.stringify(newUser),
-      headers:{'Content-Type': 'application/json'}
-    })
-    .then(res => res.json())
-    .then(response => {
-        this.fetchUsers()
-        this.clearForm()
-        console.log('Success:', JSON.stringify(response))
-      })
-    .catch(error => console.error('Error:', error));
-  };
-
-  // update a user
-  @action
-  update = () => {
-    fetch(this.BASE_URL + "/users/" + this.editingUser.id, {
-      method: 'PATCH',
-      body: JSON.stringify(this.editingUser),
-      headers:{'Content-Type': 'application/json'}
-    })
-    .then(res => res.json())
-    .then(response => {
-        this.fetchUsers()
-        this.clearForm()
-        console.log('Success:', JSON.stringify(response))
-      })
-    .catch(error => console.error('Error:', error));
-  };
-
-  @action
-  saveUser = editingUser => {
-    if (this.editingUser.id == null) {
-        this.create()
-    } else {
-        this.update()
-    }
-  }
-
-  // toggle the completion state of a user
-  @action
-  toggle = id => {
-    let user = this.users.find(e => e.id === id);
-    if (user) {
-      user.actived = !user.actived;
-    }
-  };
-
-  // fetch all users from server
-  @action
-  fetchUsers = () => {
-      this.fetchState = "pending"
-        return fetch(this.BASE_URL + '/users')
-                .then(response => response.json())
-                .then(json => {
-                  this.fetchState = "done"
-                  this.users = json
-                  })
-                .catch(error => {
-                  this.fetchState = "error"
-                  console.log(error)
-                  })
-    }
-    @action
-    onCreateUser = () => {
-      // event.preventDefault();
-      alert("Test")
-      window.location.href = "/createUser"
-    }
-
-}
-
-@observer
-class UserForm extends Component {
+class UserList extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      users: []
+    };
   }
 
-  componentDidMount(){
-    this.props.userStore.fetchUsers()
-  }
-
-  onFormSubmit = event => {
-    event.preventDefault();
-    this.props.userStore.saveUser()
+  onCreateClick = (event) => {
+    window.location.href = "/createUser";
   };
 
-  @action
-  handleFirstInputChange = event => {
-    this.props.userStore.editingUser.first = event.target.value;
-  };
-  @action
-  handleLastInputChange = event => {
-    this.props.userStore.editingUser.last = event.target.value;
-  };
-  @action
-  handleEmailInputChange = event => {
-    this.props.userStore.editingUser.email = event.target.value;
-  };
-  @action
-  handleRoleInputChange = event => {
-    this.props.userStore.editingUser.role = event.target.value;
+  onEditClick = (id) => {
+    window.location.href = "/editUser/" + id;
   };
 
   render() {
     return (
-      <form onSubmit={this.onFormSubmit}>
-        <label>
-          first:
-          <input
-            type="text"
-            name="first"
-            value={this.props.userStore.editingUser.first}
-            onChange={this.handleFirstInputChange}
-          />
-        </label>
-        <br/>
-        <label>
-          last:
-          <input
-            type="text"
-            name="last"
-            value={this.props.userStore.editingUser.last}
-            onChange={this.handleLastInputChange}
-          />
-        </label>
-        <br/>
-        <label>
-          email:
-          <input
-            type="text"
-            name="email"
-            value={this.props.userStore.editingUser.email}
-            onChange={this.handleEmailInputChange}
-          />
-        </label>
-        <br/>
-        <label>
-          role:
-          <select onChange={this.handleRoleInputChange} value={this.props.userStore.editingUser.role}>
-            <option value="">--Please choose a role--</option>
-            <option value="student">Student</option>
-            <option value="professor">Professor</option>
-          </select>
-        </label>
-        <br/>
-        <input type="submit" value={this.props.userStore.editingUser.id ? "update user" : "create user"} />
-      </form>
-    );
-  }
-}
+      <div>
+        <button type="button" onClick={this.onCreateClick}>Create New User</button>
+        <hr />
 
-const UserView = ({ onClick, first, last, email, role, actived, onEditingUser }) => (
+        <Query query={GET_USERS}>
+          {({ loading, error, data }) => {
+            if (loading) return <div>Fetching</div>
+            if (error) return <div>Error</div>
+
+            const users = data.users
+
+            // this.setState({users:data.users})
+
+            return (
+              <table className="table table-striped">
+                <thead className="thead-light">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email Address</th>
+                    <th scope="col">Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map(user => <UserView key={user.id} user={user} />)}
+                </tbody>
+              </table>
+            )
+          }}
+        </Query>
+      </div>
+    )
+  }
+};
+
+const UserView = ({ user }) => (
   <tr>
-    <th>
-      {first}
+    <th scope="row">
+      {user.id}
     </th>
-    <th>
-      {last}
-    </th>
-    <th>
-      {email}
-    </th>
-    <th>
-      <select>
-        <option >{role}</option>
-      </select>
-    </th>
-    <th>
-      <input
-        type="checkbox"
-        name="is_finish"
-        value={actived}
-        defaultChecked={actived}
-        onClick={onClick}
-      />
-    </th>
-    <th>
-      <a href="#" onClick={onEditingUser}>Edit</a>
-    </th>
+    <td>
+      {user.name}
+    </td>
+    <td>
+      {user.email}
+    </td>
+    <td>
+      {user.role}
+    </td>
+    <td>
+      <a href="#" >Edit</a>
+    </td>
   </tr>
 );
 
-const Link = ({ active, children, onClick }) => {
-  if (active) {
-    return (
-      <span>
-        {" | "} {children}
-      </span>
-    );
-  }
 
-  return (
-    <a href="#" onClick={onClick}>
-      {" | "}
-      {children}
-    </a>
-  );
-};
+// const UserCounter = () => (
+//   <span>
+//     {userStore.filterCompleted.length} of {userStore.users.length} Actived
+//   </span>
+// );
 
-const UserFilter = observer(({ userStore }) => (
-  <span>
-    <b>Filter Users</b>:
-    {["All", "Active", "Inactive"].map((status, i) => (
-      <Link
-        key={i}
-        active={userStore.filterType === status}
-        onClick={() => userStore.setFilterType(status)}
-      >
-        {status}
-      </Link>
-    ))}
-  </span>
-));
+// class UserApp extends Component {
 
-const FetchState = observer(({ userStore }) => (
-  <div>
-     Fetch State : {userStore.fetchState}
-  </div>
-));
+//   onCreateClick = (event) => {
+//     window.location.href = "/createUser";
+//   }
 
-const UserCreate = observer(({ userStore }) => (
-  <div>
-     <button type="button" onClick={userStore.createUser}>Create New User</button>
-  </div>
-));
+//   render() {
+//     return (
+//       <div>
+//         <button type="button" onClick={this.onCreateClick}>Create New User</button>
+//         <hr />
+//         <UserList />
+//       </div>)
+//   }
 
-const UserCounter = observer(({ userStore }) => (
-  <span>
-    {userStore.filterCompleted.length} of {userStore.users.length} Actived
-  </span>
-));
-
-const UserList = observer(({ userStore }) => (
-  <div className="List">
-  <table>
-    {/* <button type="button" onclick={userStore.onCreateUser}>Create New User</button> */}
-    <thead>
-      <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Email Address</th>
-        <th>Role</th>
-        <th>Active</th>
-      </tr>
-    </thead>
-    <tbody>
-      {userStore.filtered.map(t => (
-        <UserView
-          key={t.id}
-          first={t.first}
-          last={t.last}
-          email={t.email}
-          role={t.role}
-          actived={t.actived}
-          onClick={() => {
-            userStore.toggle(t.id);
-          }}
-          onEditingUser={() => {
-            userStore.setEditingUser(t.id)
-          }}
-        />
-      ))}
-    </tbody>
-  </table>
-  </div>
-));
-
-
-const UserApp = observer(() => {
-
-  const userStore = new UserStore();
-  document.userStore = userStore
-
-  return (
-    <div>
-      <UserCreate userStore={userStore} />
-      <hr />
-      <UserList userStore={userStore} />
-      <hr />
-      <FetchState userStore={userStore} />
-      <UserCounter userStore={userStore} />
-      <hr />
-      <UserFilter userStore={userStore} />
-    </div>)
-})
+// }
 
 
 
-export default UserApp
+export default UserList

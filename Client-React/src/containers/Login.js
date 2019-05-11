@@ -42,6 +42,7 @@ class Login extends Component {
   }
 
   _confirm = async data => {
+
     this._saveUserData(data.loginUser.token, data.loginUser.user);
     window.location.href = "/list";
   }
@@ -61,7 +62,8 @@ class Login extends Component {
           this.state.message = "Loading..."
     }
     if (error) {
-      this.state.message = "Username or password is not right, please input again!"
+      // this.state.message = "Username or password is not right, please input again!"
+      this.state.message = error + ""
     }
       return (
       <div className="Login">

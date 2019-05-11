@@ -1,167 +1,136 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import "./Create.css";
 
-import { observable, action, computed } from "mobx";
-import { observer } from "mobx-react";
+import { Mutation } from 'react-apollo';
+import { gql } from 'apollo-boost';
+import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
-@observer
+const ADD_USER = gql`
+  mutation addUser ($name: String!, $email: String!, $role: Role!, $password: String!) {
+    createUser(
+        user: {
+          name: $name
+          email: $email
+          role: $role
+          password: $password
+        }
+      ) {
+        id
+        name
+      }
+  }
+`;
+
 class UserForm extends Component {
   constructor(props) {
     super(props);
-    
-    
-  }
-  componentWillMount(){
-    if(this.props.match.params.id != null) {
-      this.setEditingUser(this.props.match.params.id)
-    }
-  }
-
-  @observable editingUser = { id: null, first: "", last: "", email: "", role: ""};
-
-  @observable users = [
-    {'id': 0, 'first': 'Joe', 'last': 'Bloggs',
-        'email': 'joe@bloggs.com', 'role': 'student', 'active': true},
-    {'id': 1, 'first': 'Ben', 'last': 'Bitdiddle',
-        'email': 'ben@cuny.edu', 'role': 'student', 'active': true},
-    {'id': 2, 'first': 'Alissa P', 'last': 'Hacker',
-        'email': 'missalissa@cuny.edu', 'role': 'professor', 'active': true},
-  ];
-
-  @action
-  setEditingUser(id) {
-    let user = this.users.find(e => e.id == id);
-    this.editingUser.id = id
-    this.editingUser.first = user.first
-    this.editingUser.last = user.last
-    this.editingUser.email = user.email
-    this.editingUser.role = user.role
+    this.state = {
+      name: '',
+      email: '',
+      role: 'Student',
+      password: '',
+      message: ""
+    };
   }
 
-  @action
-  clearForm = () => {
-    this.editingUser.id = null
-    this.editingUser.first = "";
-    this.editingUser.last = "";
-    this.editingUser.email = "";
-    this.editingUser.role = "";
-  }
-
-  // create a user and post it to server
-  @action
   create = () => {
-    // let newUser = {first: this.editingUser.first, last: this.editingUser.last, email:this.editingUser.email, role: this.editingUser.role, actived: false }
-    // fetch(this.BASE_URL + "/users", {
-    //   method: 'post',
-    //   body: JSON.stringify(newUser),
-    //   headers:{'Content-Type': 'application/json'}
-    // })
-    // .then(res => res.json())
-    // .then(response => {
-    //     this.fetchUsers()
-    //     this.clearForm()
-    //     console.log('Success:', JSON.stringify(response))
-    //   })
-    // .catch(error => console.error('Error:', error));
-
     window.location.href = "/list"
   };
 
-  // update a user
-  @action
-  update = () => {
-    // fetch(this.BASE_URL + "/users/" + this.editingUser.id, {
-    //   method: 'PATCH',
-    //   body: JSON.stringify(this.editingUser),
-    //   headers:{'Content-Type': 'application/json'}
-    // })
-    // .then(res => res.json())
-    // .then(response => {
-    //     this.fetchUsers()
-    //     this.clearForm()
-    //     console.log('Success:', JSON.stringify(response))
-    //   })
-    // .catch(error => console.error('Error:', error));
-    window.location.href = "/list"
-  };
-
-  @action
-  saveUser = editingUser => {
-    if (this.editingUser.id == null) {
-        this.create()
-    } else {
-        this.update()
-    }
+  validateForm() {
+    return this.state.name.length > 0 && this.state.email.length > 0 && this.state.password.length > 0;
   }
-
-  @action
-  handleFirstInputChange = event => {
-    this.editingUser.first = event.target.value;
-  };
-  @action
-  handleLastInputChange = event => {
-    this.editingUser.last = event.target.value;
-  };
-  @action
-  handleEmailInputChange = event => {
-    this.editingUser.email = event.target.value;
-  };
-  @action
-  handleRoleInputChange = event => {
-    this.editingUser.role = event.target.value;
-  };
-
-  onFormSubmit = event => {
-    event.preventDefault();
-    this.saveUser()
-  };
 
   render() {
+
     return (
-      <div className="Create">
-      <form onSubmit={this.onFormSubmit}>
-        <label>
-          first:
-          <input
-            type="text"
-            name="first"
-            value={this.editingUser.first}
-            onChange={this.handleFirstInputChange}
-          />
-        </label>
-        <br/>
-        <label>
-          last:
-          <input
-            type="text"
-            name="last"
-            value={this.editingUser.last}
-            onChange={this.handleLastInputChange}
-          />
-        </label>
-        <br/>
-        <label>
-          email:
-          <input
-            type="text"
-            name="email"
-            value={this.editingUser.email}
-            onChange={this.handleEmailInputChange}
-          />
-        </label>
-        <br/>
-        <label>
-          role:
-          <select onChange={this.handleRoleInputChange} value={this.editingUser.role}>
-            <option value="">--Please choose a role--</option>
-            <option value="student">Student</option>
-            <option value="professor">Professor</option>
-          </select>
-        </label>
-        <br/>
-        <input type="submit" value={this.editingUser.id ? "update user" : "create user"} />
-      </form>
-      </div>
+      <Mutation mutation={ADD_USER} onCompleted={() => { this.create() }}>
+        {(addUser, result) => {
+          const { data, loading, error, called } = result;
+
+          if (loading) {
+            this.state.message = "Loading..."
+          }
+          if (error) {
+            // this.state.message = "Username or password is not right, please input again!"
+            this.state.message = error + ""
+          }
+
+          return (
+            <div className="Create">
+              <form onSubmit={e => {
+                e.preventDefault();
+                addUser({
+                  variables: {
+                    name: this.state.name,
+                    email: this.state.email,
+                    password: this.state.password,
+                    role: this.state.role
+                  }
+                })
+              }}>
+
+                <FormGroup controlId="name" bsSize="large">
+                  <ControlLabel>Name</ControlLabel>
+                  <FormControl
+                    autoFocus
+                    type="text"
+                    value={this.state.name}
+                    onChange={e => this.setState({ name: e.target.value })}
+                  />
+                </FormGroup>
+
+                <FormGroup controlId="email" bsSize="large">
+                  <ControlLabel>Email</ControlLabel>
+                  <FormControl
+                    type="email"
+                    value={this.state.email}
+                    onChange={e => this.setState({ email: e.target.value })}
+                  />
+                </FormGroup>
+
+                <FormGroup controlId="password" bsSize="large">
+                  <ControlLabel>Password</ControlLabel>
+                  <FormControl
+                    value={this.state.password}
+                    onChange={e => this.setState({ password: e.target.value })}
+                    type="password"
+                  />
+                </FormGroup>
+
+                <FormGroup controlId="role" bsSize="large">
+                  <ControlLabel>Role</ControlLabel>
+                  <select className="form-control" onChange={e => this.setState({ role: e.target.value })}>
+                    <option value="Student" >Student</option>
+                    <option value="Faculty">Faculty</option>
+                  </select>
+                </FormGroup>
+
+                <Button
+                  block
+                  bsSize="large"
+                  disabled={!this.validateForm()}
+                  type="submit"
+                >
+                  Submit
+              </Button>
+                <label className="Message">{this.state.message}</label>
+              </form>
+            </div>
+          );
+
+
+          //   const { createUser } = data;
+
+          //   if (createUser) {
+          //     const { name, id } = createUser;
+
+          //     return <div>{`Created ${name} with id ${id}`}</div>;
+          //   } else {
+          //     return null;
+          //   }
+        }}
+      </Mutation>
     );
   }
 }

@@ -2,11 +2,12 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import { Nav, Navbar, NavItem } from "react-bootstrap";
 import './App.css';
-import {AUTH_TOKEN} from './constants'
+import {AUTH_TOKEN, CURR_USER} from './constants'
 import Routes from "./Routes";
 
 function App() {
   const authToken = localStorage.getItem(AUTH_TOKEN)
+  // const user = localStorage.getItem(CURR_USER)
 
   return (
       <div className="App container">
@@ -22,6 +23,7 @@ function App() {
             {authToken ? (
               <NavItem onClick={() => {
                 localStorage.removeItem(AUTH_TOKEN)
+                localStorage.removeItem(CURR_USER)
                 window.location.href = "/"
               }}>
               Logout
