@@ -71,7 +71,7 @@ class CourseList extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {courses ? (courses.map(course => <CourseView key={course.id} course={course} />)) : (<div>No data</div>)}
+                  {courses.length !== 0 ? (courses.map(course => <CourseView key={course.id} course={course} />)) : (<div>No data</div>)}
                 </tbody>
               </table>
             </div>

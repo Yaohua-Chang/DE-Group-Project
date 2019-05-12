@@ -1,4 +1,3 @@
-import "./Home.css";
 import { AUTH_TOKEN, CURR_USER } from '../constants'
 
 function Home() {

@@ -77,7 +77,7 @@ class FacultyList extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {courses.map(course => <FacultyView key={course.id} course={course} editClick={this.onEditClick} />)}
+                  {courses.length !== 0 ? (courses.map(course => <FacultyView key={course.id} course={course} editClick={this.onEditClick} />)): (<div>No data</div>)}
                 </tbody>
               </table>
             </div>
