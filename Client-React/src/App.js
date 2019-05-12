@@ -22,8 +22,7 @@ function App() {
             <Nav pullRight>
             {authToken ? (
               <NavItem onClick={() => {
-                localStorage.removeItem(AUTH_TOKEN)
-                localStorage.removeItem(CURR_USER)
+                localStorage.clear()
                 window.location.href = "/"
               }}>
               Logout

@@ -1,4 +1,3 @@
-import "./List.css";
 import React, { Component } from "react";
 
 import gql from "graphql-tag";
@@ -94,7 +93,7 @@ const UserView = ({ user, editClick }) => (
       {user.role}
     </td>
     <td>
-      <a href="#" onClick={editClick.bind(this, user)}>Edit</a>
+      <a href="#" onClick={editClick.bind(this, user)}>Manage</a>
     </td>
   </tr>
 );

@@ -50,15 +50,14 @@ class Login extends Component {
     });
   }
 
-  _confirm = async data => {
-
+  _confirm = data => {
     this._saveUserData(data.loginUser.token, data.loginUser.user);
-    window.location.href = "/list";
+    this.props.history.push("/");
   }
 
   _saveUserData = (token, user) => {
     localStorage.setItem(AUTH_TOKEN, token);
-    localStorage.setItem(CURR_USER, user);
+    localStorage.setItem(CURR_USER, JSON.stringify(user));
   }
 
 

@@ -100,7 +100,7 @@ class UserForm extends Component {
 
                 <FormGroup controlId="role" bsSize="large">
                   <ControlLabel>Role</ControlLabel>
-                  <select className="form-control" onChange={e => this.setState({ role: e.target.value })}>
+                  <select className="form-control" value={this.state.role} onChange={e => this.setState({ role: e.target.value })}>
                     <option value="Student" >Student</option>
                     <option value="Faculty">Faculty</option>
                   </select>
