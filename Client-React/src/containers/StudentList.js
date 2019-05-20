@@ -67,7 +67,7 @@ class CourseList extends Component {
                     <th scope="col">Course ID</th>
                     <th scope="col">Course Name</th>
                     <th scope="col">Professor Name</th>
-                    <th scope="col">Total Numbers of Student</th>
+                    <th scope="col">Count of Enrolled Students</th>
                   </tr>
                 </thead>
                 <tbody>

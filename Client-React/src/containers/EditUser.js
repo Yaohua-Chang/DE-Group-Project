@@ -6,12 +6,13 @@ import { gql } from 'apollo-boost';
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
 const EDIT_USER = gql`
-  mutation editUser ($id: ID!, $name: String!, $email: String!, $role: Role!) {
+  mutation editUser ($id: ID!, $name: String!, $email: String!, $password: String!, $role: Role!) {
     updateUser(
         id: $id
         user: {
           name: $name
           email: $email
+          password: $password
           role: $role
         }
       ) {
@@ -28,6 +29,7 @@ class UserForm extends Component {
       id: 0,
       name: '',
       email: '',
+      password: '',
       role: 'Student',
       message: ""
     };
@@ -35,12 +37,13 @@ class UserForm extends Component {
 
   componentDidMount() {
     let user = this.props.location.state;
-    let {id, name, email, role} = user;
+    let {id, name, email, role, passwordHash} = user;
 
     this.setState({
       id: id,
       name : name,
       email: email,
+      password: "password",
       role: role,
     })
   }
@@ -77,6 +80,7 @@ class UserForm extends Component {
                     id: this.state.id,
                     name: this.state.name,
                     email: this.state.email,
+                    password: this.state.password,
                     role: this.state.role
                   }
                 })

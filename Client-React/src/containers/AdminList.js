@@ -9,6 +9,7 @@ const GET_USERS = gql`
         id
         name
         email
+        passwordHash
         role
       }
   }

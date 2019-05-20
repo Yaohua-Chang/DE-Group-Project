@@ -28,14 +28,15 @@ query {
             name
           }
         }
-      }    
+      }
+      
       }
     }
   }`
 ;
 
 
-class CourseList extends Component {
+class AssignmentList extends Component {
   constructor(props) {
     super(props);
     const faculty = JSON.parse(localStorage.getItem(CURR_USER))
@@ -52,11 +53,21 @@ class CourseList extends Component {
     
     this.course_id = id;
     this.course_name = name;
+    
   }
+
 
 
   onCreateClick = (event) => {
     window.location.href = "/addCourseStudent";
+  };
+  onCreateAssignmentClick = (event) => {
+    window.location.href = "/addAssignment";
+  };
+  onEditClick = (assignmentList) => {
+
+    window.location.href = "/addGrade";
+
   };
 
   render() {
@@ -77,53 +88,51 @@ class CourseList extends Component {
 
           const courses = data.faculty.filter(faculty => faculty.id === this.state.faculty_id)[0].courses
           const course = courses.filter(courses => courses.id === this.course_id)
-          const studentList = course[0].students
+          const assignmentList = course[0].assignments
           return (
             <div>
               <label>Welcome! {this.state.faculty_name} </label>
-              <label> . You can manage enrolled students of {this.course_name} here.</label>
-              
+              <label> . You can manage assignments of {this.course_name} here.</label>
               <hr />
               <table className="table table-striped">
                 <thead className="thead-light">
                   <tr>
                     
-                    <th scope="col">enrolled Student ID</th>
-                    <th scope="col">enrolled Student name</th>
+                    <th scope="col">Assignment ID</th>
+                    <th scope="col">Assignment name</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {studentList !== 0 ? (studentList.map(studentList => <StudentListView key={studentList.id} studentList={studentList} />)) : (<div>No data</div>)}
+                  {assignmentList !== 0 ? (assignmentList.map(assignmentList => <AssignmentListView key={assignmentList.id} assignmentList={assignmentList} editClick={this.onEditClick} />)) : (<div>No data</div>)}
                 </tbody>
               </table>
-              <button type="button" onClick={this.onCreateClick}>Add Student</button>
+              <button type="button" onClick={this.onCreateAssignmentClick}>Add Assignment</button>
+              <button type="button" onClick={this.onEditClick}>Add grade</button>
             </div>
           )
         }}
       </Query>
-
-      
-
     )
   }
 };
 
-const StudentListView = ({ studentList }) => (
+const AssignmentListView = ({ assignmentList, editClick }) => (
   <tr>
     <th scope="row">
-      {studentList.id}
+      {assignmentList.id}
     </th>
     <td>
-      {studentList.name}
+      {assignmentList.name}
     </td>
     
     <td>
-      <a href="#">Detail</a>
+    <a href="#">Grade</a>
+    
     </td>
   </tr>
 );
 
-export default CourseList
+export default AssignmentList
 
 
 

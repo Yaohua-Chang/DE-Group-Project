@@ -6,7 +6,7 @@ import { gql } from 'apollo-boost';
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
 const ADD_STUDENTCOURSE = gql`
-mutation addGrade ($assignmentID: ID!, $studentID: ID!, $grade: String!) {
+mutation addGrade ($assignmentID: ID!, $studentID: ID!, $grade: Float!) {
   createAssignmentGrade(assignmentID: $assignmentID, studentID: $studentID, grade:$grade) {
     id
     assignment {
@@ -29,7 +29,7 @@ class CourseForm extends Component {
     this.state = {
       assignmentID: '',
       studentID:'',
-      grade: ''
+      grade: null
     };
   }
 
@@ -38,7 +38,7 @@ class CourseForm extends Component {
   };
 
   validateForm() {
-    return this.state.assignmentID.length > 0 && this.state.grade.length && this.state.studentID.length> 0;
+    return this.state.assignmentID.length > 0 && this.state.studentID.length> 0;
   }
 
   render() {
@@ -83,7 +83,6 @@ class CourseForm extends Component {
                 <FormGroup controlId="studentID" bsSize="large">
                   <ControlLabel>Student ID</ControlLabel>
                   <FormControl
-                    autoFocus
                     type="text"
                     value={this.state.studentID}
                     onChange={e => this.setState({ studentID: e.target.value })}
@@ -95,7 +94,7 @@ class CourseForm extends Component {
                   <FormControl
                     type="grade"
                     value={this.state.grade}
-                    onChange={e => this.setState({ grade: e.target.value })}
+                    onChange={e => this.setState({ grade: parseFloat(e.target.value) })}
                   />
                 </FormGroup>
 

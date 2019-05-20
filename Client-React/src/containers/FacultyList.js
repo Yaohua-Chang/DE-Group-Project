@@ -17,6 +17,10 @@ const GET_FACULTIES = gql`
             id
             name
           }
+          assignments{
+            id
+            name
+          }
         }
       }
   }
@@ -40,6 +44,16 @@ class FacultyList extends Component {
 
     let path = {
       pathname: '/manageCourse',
+      state: course,
+    }
+    this.props.history.push(path);
+
+  };
+
+  onManageAssginmentClick = (course) => {
+
+    let path = {
+      pathname: '/assignments',
       state: course,
     }
     this.props.history.push(path);
@@ -73,11 +87,12 @@ class FacultyList extends Component {
                   <tr>
                     <th scope="col">Course ID</th>
                     <th scope="col">Course Name</th>
-                    <th scope="col">Total Numbers of Student</th>
+                    <th scope="col">Count of Enrolled Students</th>
+                    <th scope="col">Count of Assignments</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {courses.length !== 0 ? (courses.map(course => <FacultyView key={course.id} course={course} editClick={this.onEditClick} />)): (<div>No data</div>)}
+                  {courses.length !== 0 ? (courses.map(course => <FacultyView key={course.id} course={course} editClick={this.onEditClick} manageAssginmentClick={this.onManageAssginmentClick} />)): (<div>No data</div>)}
                 </tbody>
               </table>
             </div>
@@ -89,7 +104,7 @@ class FacultyList extends Component {
   }
 };
 
-const FacultyView = ({ course, editClick }) => (
+const FacultyView = ({ course, editClick, manageAssginmentClick }) => (
   <tr>
     <th scope="row">
       {course.id}
@@ -101,7 +116,13 @@ const FacultyView = ({ course, editClick }) => (
       {course.students.length}
     </td>
     <td>
-    <a href="/manageCourse" onClick={editClick.bind(this, course)}>Manage</a>
+      {course.assignments.length}
+    </td>
+    <td>
+    <a href="/manageCourse" onClick={editClick.bind(this, course)}>Manage Students</a>
+    </td>
+    <td>
+    <a href="/assignments" onClick={manageAssginmentClick.bind(this, course)}>Manage Assignments</a>
     </td>
   </tr>
 );
