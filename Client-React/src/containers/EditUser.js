@@ -5,14 +5,14 @@ import { Mutation } from 'react-apollo';
 import { gql } from 'apollo-boost';
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
-const ADD_USER = gql`
-  mutation addUser ($name: String!, $email: String!, $role: Role!, $password: String!) {
-    createUser(
+const EDIT_USER = gql`
+  mutation editUser ($id: ID!, $name: String!, $email: String!, $role: Role!) {
+    updateUser(
+        id: $id
         user: {
           name: $name
           email: $email
           role: $role
-          password: $password
         }
       ) {
         id
@@ -25,6 +25,7 @@ class UserForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: 0,
       name: '',
       email: '',
       role: 'Student',
@@ -34,17 +35,18 @@ class UserForm extends Component {
 
   componentDidMount() {
     let user = this.props.location.state;
-    let {name, email, role} = user;
+    let {id, name, email, role} = user;
 
     this.setState({
+      id: id,
       name : name,
       email: email,
       role: role,
     })
   }
 
-  create = () => {
-    window.location.href = "/list"
+  finish = () => {
+    window.location.href = "/admin"
   };
 
   validateForm() {
@@ -54,8 +56,8 @@ class UserForm extends Component {
   render() {
 
     return (
-      <Mutation mutation={ADD_USER} onCompleted={() => { this.create() }}>
-        {(addUser, result) => {
+      <Mutation mutation={EDIT_USER} onCompleted={() => { this.finish() }}>
+        {(editUser, result) => {
           const { data, loading, error, called } = result;
 
           if (loading) {
@@ -70,15 +72,14 @@ class UserForm extends Component {
             <div className="Create">
               <form onSubmit={e => {
                 e.preventDefault();
-                window.location.href = "/list"
-                // addUser({
-                //   variables: {
-                //     name: this.state.name,
-                //     email: this.state.email,
-                //     password: this.state.password,
-                //     role: this.state.role
-                //   }
-                // })
+                editUser({
+                  variables: {
+                    id: this.state.id,
+                    name: this.state.name,
+                    email: this.state.email,
+                    role: this.state.role
+                  }
+                })
               }}>
 
                 <FormGroup controlId="name" bsSize="large">

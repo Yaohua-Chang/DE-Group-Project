@@ -34,7 +34,7 @@ class UserForm extends Component {
   }
 
   create = () => {
-    window.location.href = "/list"
+    window.location.href = "/admin"
   };
 
   validateForm() {
