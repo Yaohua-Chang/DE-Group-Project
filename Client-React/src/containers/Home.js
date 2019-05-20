@@ -3,10 +3,7 @@ import { AUTH_TOKEN, CURR_USER } from '../constants'
 function Home() {
 
     const authToken = localStorage.getItem(AUTH_TOKEN)
-    if (authToken == null) {
-        window.location.href = "/login";
-    } else {
-
+    if (authToken) {
         const user = JSON.parse(localStorage.getItem(CURR_USER))
         console.log(user.role)
         if (user.role === "Admin") {
@@ -16,6 +13,8 @@ function Home() {
         } else if (user.role === "Student") {
             window.location.href = "/student";
         }
+    } else {
+        window.location.href = "/login";
     }
 
     return null
