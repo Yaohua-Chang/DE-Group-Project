@@ -33,14 +33,14 @@ class FacultyList extends Component {
   }
 
   onCreateClick = (event) => {
-    window.location.href = "/createUser";
+    window.location.href = "/createCourse";
   };
 
-  onEditClick = (faculty) => {
+  onEditClick = (course) => {
 
     let path = {
-      pathname: '/editUser',
-      state: faculty,
+      pathname: '/manageCourse',
+      state: course,
     }
     this.props.history.push(path);
 
@@ -101,7 +101,7 @@ const FacultyView = ({ course, editClick }) => (
       {course.students.length}
     </td>
     <td>
-      <a href="#">Manage</a>
+    <a href="/manageCourse" onClick={editClick.bind(this, course)}>Manage</a>
     </td>
   </tr>
 );
