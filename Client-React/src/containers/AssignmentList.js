@@ -57,14 +57,11 @@ class AssignmentList extends Component {
   }
 
 
-
-  onCreateClick = (event) => {
-    window.location.href = "/addCourseStudent";
-  };
   onCreateAssignmentClick = (event) => {
     window.location.href = "/addAssignment";
   };
-  onEditClick = (assignmentList) => {
+
+  onEditClick = () => {
 
     window.location.href = "/addGrade";
 
@@ -107,7 +104,6 @@ class AssignmentList extends Component {
                 </tbody>
               </table>
               <button type="button" onClick={this.onCreateAssignmentClick}>Add Assignment</button>
-              <button type="button" onClick={this.onEditClick}>Add grade</button>
             </div>
           )
         }}
@@ -126,7 +122,7 @@ const AssignmentListView = ({ assignmentList, editClick }) => (
     </td>
     
     <td>
-    <a href="#">Grade</a>
+    <a href="/addGrade" onClick={editClick}>Grade</a>
     
     </td>
   </tr>

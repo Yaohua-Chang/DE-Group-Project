@@ -4,6 +4,7 @@ import Home from "./containers/Home";
 import Login from "./containers/Login";
 import AdminList from "./containers/AdminList";
 import StudentList from "./containers/StudentList";
+import StudentDetail from "./containers/StudentDetail";
 import FacultyList from "./containers/FacultyList";
 import NotFound from "./containers/NotFound";
 import CreateUser from "./containers/CreateUser"
@@ -20,6 +21,7 @@ export default () =>
     <Route path="/login" exact component={Login} />
     <Route path="/admin" exact component={AdminList} />
     <Route path="/student" exact component={StudentList} />
+    <Route path="/detail" exact component={StudentDetail} />
     <Route path="/faculty" exact component={FacultyList} />
     <Route path="/createUser" exact component={CreateUser} />
     <Route path="/editUser" exact component={EditUser} />

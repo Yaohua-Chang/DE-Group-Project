@@ -17,9 +17,16 @@ const GET_STUDENTS = gql`
           id
           name
         }
-        students {
+        assignments{
           id
           name
+          grades {
+            student {
+              id
+              name
+            }
+            grade
+          }
         }
       }
     }
@@ -36,8 +43,14 @@ class CourseList extends Component {
     };
   }
 
-  onCreateClick = (event) => {
-    window.location.href = "/createUser";
+  onDetailClick = (course) => {
+
+    let path = {
+      pathname: '/detail',
+      state: course,
+    }
+    this.props.history.push(path);
+
   };
 
   render() {
@@ -67,11 +80,11 @@ class CourseList extends Component {
                     <th scope="col">Course ID</th>
                     <th scope="col">Course Name</th>
                     <th scope="col">Professor Name</th>
-                    <th scope="col">Count of Enrolled Students</th>
+                    <th scope="col">Count of Assginments</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {courses.length !== 0 ? (courses.map(course => <CourseView key={course.id} course={course} />)) : (<div>No data</div>)}
+                  {courses.length !== 0 ? (courses.map(course => <CourseView key={course.id} course={course} detailClick = {this.onDetailClick}/>)) : (<div>No data</div>)}
                 </tbody>
               </table>
             </div>
@@ -83,7 +96,7 @@ class CourseList extends Component {
   }
 };
 
-const CourseView = ({ course }) => (
+const CourseView = ({ course, detailClick }) => (
   <tr>
     <th scope="row">
       {course.id}
@@ -95,10 +108,10 @@ const CourseView = ({ course }) => (
       {course.professor.name}
     </td>
     <td>
-      {course.students.length}
+      {course.assignments.length}
     </td>
     <td>
-      <a href="#">Detail</a>
+      <a href="detail" onClick={detailClick.bind(this, course)}>Detail</a>
     </td>
   </tr>
 );
