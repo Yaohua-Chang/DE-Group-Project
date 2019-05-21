@@ -38,7 +38,7 @@ class CourseForm extends Component {
   };
 
   validateForm() {
-    return this.state.assignmentID.length > 0 && this.state.studentID.length> 0;
+    return this.state.assignmentID.length > 0 && this.state.grade && this.state.studentID.length> 0;
   }
 
   render() {
